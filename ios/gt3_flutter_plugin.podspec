@@ -5,16 +5,16 @@
 Pod::Spec.new do |s|
   s.name             = 'gt3_flutter_plugin'
   s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.summary          = 'The flutter plugin project for Geetest captcha.'
   s.description      = <<-DESC
-A new flutter plugin project.
+  The flutter plugin project for Geetest captcha.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://www.geetest.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Geetest' => 'xuwei@geetest.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
-  s.dependency 'Flutter'
+  s.dependency 'Flutter', 'GT3Captcha-iOS'
   s.platform = :ios, '8.0'
 
   # Flutter.framework does not contain a i386 slice.
