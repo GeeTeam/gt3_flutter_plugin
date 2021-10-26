@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
           String code = message["code"];
 
           // TO-DO
-          //处理验证中返回的错误
+          // 处理验证中返回的错误
           if (Platform.isAndroid) { // Android 平台
 
           }

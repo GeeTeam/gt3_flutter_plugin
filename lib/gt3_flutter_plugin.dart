@@ -56,7 +56,8 @@ class Gt3FlutterPlugin {
     /// {"result": {"geetest_challenge": ..., "geetest_seccode": ..., "geetest_validate": ...},
     /// "message": ...,
     /// "code": "1"}
-    /// code 为 "1" 则完成验证，code 为 "0" 则验证失败，自动进行重试
+    /// code 为 "1" 则完成验证，需进一步进行二次校验
+    /// code 为 "0" 则验证失败，自动进行重试
     EventHandler? onResult,
     /// 错误回调
     /// 结构如下：
