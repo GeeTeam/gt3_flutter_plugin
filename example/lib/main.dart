@@ -132,18 +132,18 @@ class _MyAppState extends State<MyApp> {
   void startCaptcha() async {
     debugPrint("Start captcha. Current version: " + _platformVersion);
     // 添加时间戳，避免缓存
-      // 如果 challenge 缓存，重复使用，会收到 -21 等错误
-      String url = "https://www.geetest.com/demo/gt/register-click?t=" + DateTime.now().toString();
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        var jsonResponse =
-        convert.jsonDecode(response.body) as Map<String, dynamic>;
-        Gt3RegisterData registerData = Gt3RegisterData(
-          gt: jsonResponse["gt"],
-          challenge: jsonResponse["challenge"],
-          success: jsonResponse["success"] == 1);
-        captcha.startCaptcha(registerData);
-      }
+    // 如果 challenge 缓存，重复使用，会收到 -21 等错误
+    String url = "https://www.geetest.com/demo/gt/register-click?t=" + DateTime.now().toString();
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      var jsonResponse =
+      convert.jsonDecode(response.body) as Map<String, dynamic>;
+      Gt3RegisterData registerData = Gt3RegisterData(
+        gt: jsonResponse["gt"],
+        challenge: jsonResponse["challenge"],
+        success: jsonResponse["success"] == 1);
+      captcha.startCaptcha(registerData);
+    }
   }
 
   // 关闭
