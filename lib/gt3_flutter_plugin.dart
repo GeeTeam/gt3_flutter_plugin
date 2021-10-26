@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-typedef Future<dynamic> EventHandler(Map<String, dynamic> event);
+typedef EventHandler = Function(Map<String, dynamic> event);
 
 class Gt3FlutterPlugin {
   static const String flutterLog = "| Geetest | Flutter | ";
@@ -16,20 +16,26 @@ class Gt3FlutterPlugin {
   }
 
   EventHandler? _onShow;
+  EventHandler? _onClose;
   EventHandler? _onResult;
   EventHandler? _onError;
 
-  Gt3FlutterPlugin() {
-  }
-
-  Future<dynamic> startCaptcha(Gt3RegisterData arg) async {
-
+  /// 使用注册参数开启验证
+  void startCaptcha(Gt3RegisterData arg) {
     Map<String, dynamic> argument = arg.toMap();
     try {
-      return await _channel.invokeMethod('startCatpcha', argument);
-    } on PlatformException catch (e) {
-      print(flutterLog + 'PlatformException');
-      return '-1';
+      _channel.invokeMethod('startCaptcha', argument);
+    } catch (e) {
+      print(flutterLog + e.toString());
+    }
+  }
+
+  /// 关闭当前验证界面
+  void close() {
+    try {
+      _channel.invokeMethod('close');
+    } catch (e) {
+      print(flutterLog + e.toString());
     }
   }
 
@@ -37,13 +43,30 @@ class Gt3FlutterPlugin {
   /// 注册事件回调
   ///
   void addEventHandler({
+    /// 验证视图展示
     EventHandler? onShow,
+    /// 用户关闭验证视图
+    EventHandler? onClose,
+    /// 验证完成，获得验证校验参数
+    /// 结构如下:
+    /// {"result": {"geetest_challenge": ..., "geetest_seccode": ..., "geetest_validate": ...},
+    /// "message": ...,
+    /// "code": "1"}
+    /// code 为 "1" 则完成验证，code 为 "0" 则验证失败，自动进行重试
     EventHandler? onResult,
+    /// 错误回调
+    /// 结构如下：
+    /// {"description": ...},
+    /// "code": "-1"}
+    /// 需要根据端类型区别处理错误码
+    /// Android: https://docs.geetest.com/sensebot/apirefer/errorcode/android
+    /// iOS: https://docs.geetest.com/sensebot/apirefer/errorcode/ios
     EventHandler? onError,
   }) {
     print(flutterLog + "addEventHandler:");
 
     _onShow     = onShow;
+    _onClose    = onClose;
     _onResult   = onResult;
     _onError    = onError;
     _channel.setMethodCallHandler(_handler);
@@ -51,18 +74,22 @@ class Gt3FlutterPlugin {
 
   /// 原生回调
   Future<dynamic> _handler(MethodCall methodCall) async {
-    // print("--------FlutterPluginRecord " + methodCall.method);
 
-    String id = (methodCall.arguments as Map)['id'];
     switch (methodCall.method) {
       case "onShow":
+      print(flutterLog + "onShow:" + _onShow.toString());
           return _onShow!(methodCall.arguments.cast<String, dynamic>());
-      case "onSuccess":
+      case "onClose":
+      print(flutterLog + "onClose:" + _onClose.toString());
+          return _onClose!(methodCall.arguments.cast<String, dynamic>());
+      case "onResult":
+      print(flutterLog + "onResult:" + _onResult.toString());
           return _onResult!(methodCall.arguments.cast<String, dynamic>());
-      case "onFail":
+      case "onError":
+      print(flutterLog + "onError:" + _onError.toString());
           return _onError!(methodCall.arguments.cast<String, dynamic>());
       default:
-        throw UnsupportedError("Unrecognized Event");
+        throw UnsupportedError(flutterLog + "Unrecognized Event");
     }
   }
 }

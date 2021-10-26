@@ -23,10 +23,14 @@
                                       methodChannelWithName:@"gt3_flutter_plugin"
                                       binaryMessenger:[registrar messenger]];
       
-    Gt3FlutterPlugin *instance =  [[Gt3FlutterPlugin alloc] initWithChannel:channel];
+    Gt3FlutterPlugin *instance = [[Gt3FlutterPlugin alloc] initWithChannel:channel];
     [registrar addMethodCallDelegate:instance channel:channel];
 
-    [SwiftGt3FlutterPlugin registerWithRegistrar:registrar];
+//    [SwiftGt3FlutterPlugin registerWithRegistrar:registrar];
+}
+
+- (NSString *)getPlatformVersion {
+    return [GT3CaptchaManager sdkVersion];
 }
 
 - (GT3CaptchaManager *)manager {
@@ -36,7 +40,6 @@
       _manager.delegate = self;
       _manager.viewDelegate = self;
       
-      [_manager useVisualViewWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleDark]];
       _manager.maskColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.4];        
     }
     return _manager;
@@ -53,35 +56,25 @@
 
 - (void)startCaptcha:(FlutterMethodCall*)call result:(FlutterResult)flutterResult {
     NSLog(@"Geetest captcha register params: %@",call.arguments);
-    NSString *arg = call.arguments;
-    self.flutterResult = flutterResult;
-    NSData *jsonData = [arg dataUsingEncoding:NSUTF8StringEncoding];
-    if (!jsonData) {
-        NSError *error = [[NSError alloc] initWithDomain:@"com.geetest.gt3.flutter" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"Register params invalid."}];
-        NSDictionary *ret = [self convertToDict:error];
-        [_channel invokeMethod:@"onFail" arguments:ret];
-        return;
-    }
-
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:(NSJSONReadingOptions)0 error:&error];
+    NSDictionary *arg = call.arguments;
             
-    if (dict) {
-        NSString *geetest_id = [dict objectForKey:@"gt"];
-        NSString *geetest_challenge = [dict objectForKey:@"challenge"];
-        NSNumber *geetest_success = [dict objectForKey:@"success"];
+    if (arg) {
+        NSString *geetest_id = [arg objectForKey:@"gt"];
+        NSString *geetest_challenge = [arg objectForKey:@"challenge"];
+        NSNumber *geetest_success = [arg objectForKey:@"success"] ? @(1) : @(0);
         // 不要在一次验证会话中重复调用
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.manager configureGTest:geetest_id
-                            challenge:geetest_challenge
-                              success:geetest_success
-                            withAPI2:nil];
+                               challenge:geetest_challenge
+                                 success:geetest_success
+                                withAPI2:nil];
             [self.manager startGTCaptchaWithAnimated:YES];  
         });
     }
     else {
-        NSError *error = [[NSError alloc] initWithDomain:@"com.geetest.gt3.flutter" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"Register params parse fail."}];
+        NSError *error = [[NSError alloc] initWithDomain:@"com.geetest.gt3.flutter" code:-1 userInfo:@{NSLocalizedDescriptionKey: @"Register params parse invalid."}];
         NSDictionary *ret = [self convertToDict:error];
-        [_channel invokeMethod:@"onFail" arguments:ret];
+        [_channel invokeMethod:@"onError" arguments:ret];
     }
 }
 
@@ -89,6 +82,9 @@
     NSString *method = call.method;
     if ([@"startCaptcha" isEqualToString:method]) {
         [self startCaptcha:call result:result];
+    }
+    else if ([@"getPlatformVersion" isEqualToString:method]) {
+        result([GT3CaptchaManager sdkVersion]);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -96,6 +92,10 @@
 }
 
 #pragma mark GT3CaptchaManagerDelegate
+
+- (void)gtCaptchaUserDidCloseGTView:(GT3CaptchaManager *)manager {
+    [_channel invokeMethod:@"onClose" arguments:@{@"close" : @"1"}];
+}
 
 - (BOOL)shouldUseDefaultRegisterAPI:(GT3CaptchaManager *)manager {
     return NO;
@@ -106,15 +106,16 @@
 }
 
 - (void)gtCaptcha:(GT3CaptchaManager *)manager didReceiveCaptchaCode:(NSString *)code result:(NSDictionary *)result message:(NSString *)message {
+    NSLog(@"Geetest captcha code: %@ result: %@ message: %@", code, result, message);
     NSMutableDictionary *ret = [NSMutableDictionary dictionary];
     [ret setValue:code    forKey:@"code"];
     [ret setValue:result  forKey:@"result"];
     [ret setValue:message forKey:@"message"];
-    [_channel invokeMethod:@"onSuccess" arguments:ret];
+    [_channel invokeMethod:@"onResult" arguments:ret];
 }
 
 - (void)gtCaptcha:(GT3CaptchaManager *)manager errorHandler:(GT3Error *)error {
-    //处理验证中返回的错误
+    // 处理验证中返回的错误
     if (error.code == -999) {
         // 请求被意外中断, 一般由用户进行取消操作导致
     }
@@ -129,16 +130,27 @@
     }
 
     NSDictionary *ret = [self convertToDict:error];
-    [_channel invokeMethod:@"onFail" arguments:ret];
+    [_channel invokeMethod:@"onError" arguments:ret];
 }
 
-#pragma mark GT3CaptchaManagerDelegate
+- (void)gtCaptcha:(nonnull GT3CaptchaManager *)manager didReceiveSecondaryCaptchaData:(nullable NSData *)data response:(nullable NSURLResponse *)response error:(nullable GT3Error *)error decisionHandler:(nonnull void (^)(GT3SecondaryCaptchaPolicy))decisionHandler {
+    // We don't use this method
+}
+
+
+#pragma mark GT3CaptchaManagerViewDelegate
+
+- (void)gtCaptchaWillShowGTView:(GT3CaptchaManager *)manager {
+    [_channel invokeMethod:@"onShow" arguments:@{@"show" : @"1"}];
+}
+
+#pragma mark Utils
 
 - (NSDictionary *)convertToDict:(NSError *)error {
-    NSString *code = [NSString stringWithFormat:@"%lld", error.code];
+    NSString *code = [NSString stringWithFormat:@"%ld", error.code];
     NSMutableDictionary *ret = [NSMutableDictionary dictionary];
     [ret setValue:code            forKey:@"code"];
-    [ret setValue:error.userInfo  forKey:@"description"];
+    [ret setValue:error.userInfo.description  forKey:@"description"];
     
     return ret;
 }
