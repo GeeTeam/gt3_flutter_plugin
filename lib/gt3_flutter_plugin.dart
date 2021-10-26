@@ -10,6 +10,10 @@ class Gt3FlutterPlugin {
   static const String flutterLog = "| Geetest | Flutter | ";
   static const MethodChannel _channel = MethodChannel('gt3_flutter_plugin');
 
+  static String get version  {
+    return "0.0.1";
+  }
+
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
@@ -95,8 +99,11 @@ class Gt3FlutterPlugin {
 }
 
 class Gt3RegisterData {
+  /// 验证 ID
   final String? gt;
+  /// 验证 流水号
   final String? challenge;
+  /// 是否进入宕机模式
   final bool? success;
 
   const Gt3RegisterData({
