@@ -60,11 +60,14 @@ class _MyAppState extends State<MyApp> {
             // TO-DO
             // 发送 message["result"] 中的数据向 B 端的业务服务接口进行查询
             // 对结果进行二次校验
-            debugPrint("Captcha result code : " + code);
+            var result = message["result"] as Map;
+            debugPrint("Captcha result: " + result.toString());
+            // debugPrint("Captcha result code: " + code + ", result: " + jsonResult.toString());
+            await validateCaptchaResult(result.map((key, value) => MapEntry(key.toString(), value.toString())));
           }
           else {
             // 终端用户完成验证失败，自动重试
-            debugPrint("Captcha result code : " + code);
+            debugPrint("Captcha result code: " + code);
           }
         },
         onError: (Map<String, dynamic> message) async {
@@ -133,22 +136,44 @@ class _MyAppState extends State<MyApp> {
     debugPrint("Start captcha. Current version: " + _platformVersion);
     // 添加时间戳，避免缓存
     // 如果 challenge 缓存，重复使用，会收到 -21 等错误
-    String url = "https://www.geetest.com/demo/gt/register-click?t=" + DateTime.now().toString();
-    final response = await http.get(Uri.parse(url));
+    String api1 = "https://www.geetest.com/demo/gt/register-test?t=" + DateTime.now().toString();
+    final response = await http.get(Uri.parse(api1));
     if (response.statusCode == 200) {
       var jsonResponse =
       convert.jsonDecode(response.body) as Map<String, dynamic>;
       Gt3RegisterData registerData = Gt3RegisterData(
-        gt: jsonResponse["gt"],
-        challenge: jsonResponse["challenge"],
-        success: jsonResponse["success"] == 1);
+                                      gt: jsonResponse["gt"],
+                                      challenge: jsonResponse["challenge"],
+                                      success: jsonResponse["success"] == 1);
       captcha.startCaptcha(registerData);
+    }
+    else {
+      debugPrint(api1 + " response status: " + response.statusCode.toString());
     }
   }
 
   // 关闭
   void close() {
     captcha.close();
+  }
+
+  Future<dynamic> validateCaptchaResult(Map<String, String> result) async {
+    String api2 = "https://www.geetest.com/demo/gt/validate-test";
+    final response = await http.post(Uri.parse(api2), 
+                                      headers: {"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, 
+                                      body: result);
+    if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+      if (jsonResponse["status"].toString() == "success") {
+        debugPrint("Validate success. Response: " + response.body);
+      }
+      else {
+        debugPrint("Validate failure. Response: " + response.body);
+      }
+    }
+    else {
+      debugPrint(api2 + " response status: " + response.statusCode.toString());
+    }
   }
 
   @override
