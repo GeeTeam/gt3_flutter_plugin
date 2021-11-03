@@ -77,7 +77,12 @@ class _MyAppState extends State<MyApp> {
           // TO-DO
           // 处理验证中返回的错误
           if (Platform.isAndroid) { // Android 平台
-
+            if (code == "-1") {
+              // Gt3RegisterData 参数不合法
+            } else {
+              // 更多错误码参考开发文档
+              // https://docs.geetest.com/sensebot/apirefer/errorcode/android
+            }
           }
 
           if (Platform.isIOS) { // iOS 平台
@@ -85,7 +90,7 @@ class _MyAppState extends State<MyApp> {
               // 网络无法访问
             }
             else if (code == "-1004") {
-              // 无法查找到 HOST 
+              // 无法查找到 HOST
             }
             else if (code == "-1002") {
               // 非法的 URL
@@ -114,7 +119,7 @@ class _MyAppState extends State<MyApp> {
               // https://docs.geetest.com/sensebot/apirefer/errorcode/ios
             }
           }
-          
+
         });
     }
     catch (e) {
@@ -137,18 +142,21 @@ class _MyAppState extends State<MyApp> {
     // 添加时间戳，避免缓存
     // 如果 challenge 缓存，重复使用，会收到 -21 等错误
     String api1 = "https://www.geetest.com/demo/gt/register-test?t=" + DateTime.now().toString();
-    final response = await http.get(Uri.parse(api1));
-    if (response.statusCode == 200) {
-      var jsonResponse =
-      convert.jsonDecode(response.body) as Map<String, dynamic>;
-      Gt3RegisterData registerData = Gt3RegisterData(
-                                      gt: jsonResponse["gt"],
-                                      challenge: jsonResponse["challenge"],
-                                      success: jsonResponse["success"] == 1);
-      captcha.startCaptcha(registerData);
-    }
-    else {
-      debugPrint(api1 + " response status: " + response.statusCode.toString());
+    try {
+      final response = await http.get(Uri.parse(api1));
+      if (response.statusCode == 200) {
+        var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+        Gt3RegisterData registerData = Gt3RegisterData(
+            gt: jsonResponse["gt"],
+            challenge: jsonResponse["challenge"],
+            success: jsonResponse["success"] == 1);
+        captcha.startCaptcha(registerData);
+      } else {
+        debugPrint(api1 + " response status: " + response.statusCode.toString());
+      }
+    } on SocketException {
+      // 未联网时无法弹出验证窗口，在此处理无网络时的逻辑
+      debugPrint("No Internet Connection");
     }
   }
 
@@ -159,20 +167,27 @@ class _MyAppState extends State<MyApp> {
 
   Future<dynamic> validateCaptchaResult(Map<String, String> result) async {
     String api2 = "https://www.geetest.com/demo/gt/validate-test";
-    final response = await http.post(Uri.parse(api2), 
-                                      headers: {"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, 
-                                      body: result);
-    if (response.statusCode == 200) {
-      var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
-      if (jsonResponse["status"].toString() == "success") {
-        debugPrint("Validate success. Response: " + response.body);
+    try {
+      final response = await http.post(
+          Uri.parse(api2),
+          headers: {"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"},
+          body: result
+      );
+      if (response.statusCode == 200) {
+        var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+        if (jsonResponse["status"].toString() == "success") {
+          debugPrint("Validate success. Response: " + response.body);
+        }
+        else {
+          debugPrint("Validate failure. Response: " + response.body);
+        }
       }
       else {
-        debugPrint("Validate failure. Response: " + response.body);
+        debugPrint(api2 + " response status: " + response.statusCode.toString());
       }
-    }
-    else {
-      debugPrint(api2 + " response status: " + response.statusCode.toString());
+    } on SocketException {
+      // 未联网时无法完成二次验证，在此处理无网络时的逻辑
+      debugPrint("No Internet Connection");
     }
   }
 
