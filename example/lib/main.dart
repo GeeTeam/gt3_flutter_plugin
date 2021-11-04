@@ -79,7 +79,32 @@ class _MyAppState extends State<MyApp> {
           if (Platform.isAndroid) { // Android 平台
             if (code == "-1") {
               // Gt3RegisterData 参数不合法
-            } else {
+            }
+            else if (code == "201") {
+              // 网络无法访问
+            }
+            else if (code == "202") {
+              // Json 解析错误
+            }
+            else if (code == "204") {
+              // WebView 加载超时，请检查是否混淆极验 SDK
+            }
+            else if (code == "204_1") {
+              // WebView 加载前端页面错误，请查看日志
+            }
+            else if (code == "204_2") {
+              // WebView 加载 SSLError
+            }
+            else if (code == "206") {
+              // gettype 接口错误或返回为 null
+            }
+            else if (code == "207") {
+              // getphp 接口错误或返回为 null
+            }
+            else if (code == "208") {
+              // ajax 接口错误或返回为 null
+            }
+            else {
               // 更多错误码参考开发文档
               // https://docs.geetest.com/sensebot/apirefer/errorcode/android
             }
