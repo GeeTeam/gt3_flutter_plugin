@@ -3,7 +3,6 @@ package com.geetest.gt3captcha.gt3_flutter_plugin
 import android.app.Activity
 import android.os.Build
 import android.util.Log
-import androidx.annotation.NonNull
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
@@ -25,12 +24,12 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private var activity: Activity? = null
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "gt3_flutter_plugin")
         channel.setMethodCallHandler(this)
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "startCaptcha" -> {
                 startCaptchaInner(call, result)
@@ -44,7 +43,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 
