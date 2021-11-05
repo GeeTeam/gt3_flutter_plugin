@@ -21,6 +21,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+
+  /// 监控页面配置变化
+  static const MethodChannel _demoChannel = MethodChannel('gt4_flutter_demo');
   final Gt3FlutterPlugin captcha = Gt3FlutterPlugin();
 
   @override
@@ -42,6 +45,8 @@ class _MyAppState extends State<MyApp> {
     }
 
     try {
+      _demoChannel.setMethodCallHandler(_configurationChanged);
+
       captcha.addEventHandler(onShow: (Map<String, dynamic> message) async {
         // TO-DO
         // 验证视图已展示
@@ -164,6 +169,12 @@ class _MyAppState extends State<MyApp> {
       // 未联网时无法弹出验证窗口，在此处理无网络时的逻辑
       debugPrint("No Internet Connection");
     }
+  }
+
+  Future<dynamic> _configurationChanged(MethodCall methodCall) async {
+    debugPrint("Activity configurationChanged");
+    return captcha
+        .configurationChanged(methodCall.arguments.cast<String, dynamic>());
   }
 
   // 关闭

@@ -1,6 +1,7 @@
 package com.geetest.gt3captcha.gt3_flutter_plugin
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import com.geetest.sdk.GT3ConfigBean
@@ -34,6 +35,9 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "startCaptcha" -> {
                 startCaptchaInner(call, result)
             }
+            "configurationChanged" -> {
+                configurationChanged()
+            }
             "getPlatformVersion" -> {
                 result.success("Android ${Build.VERSION.RELEASE}")
             }
@@ -64,6 +68,10 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         onAttachedToActivity(binding)
+    }
+
+    private fun configurationChanged() {
+        gt3GeetestUtils.changeDialogLayout()
     }
 
     private fun startCaptchaInner(call: MethodCall, result: Result) {

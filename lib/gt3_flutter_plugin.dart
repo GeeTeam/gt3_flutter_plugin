@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,16 @@ class Gt3FlutterPlugin {
       _channel.invokeMethod('startCaptcha', argument);
     } catch (e) {
       print(flutterLog + e.toString());
+    }
+  }
+
+  void configurationChanged(Object object) {
+    if (Platform.isAndroid) {
+      try {
+        _channel.invokeMethod('configurationChanged');
+      } catch (e) {
+        print(flutterLog + e.toString());
+      }
     }
   }
 
