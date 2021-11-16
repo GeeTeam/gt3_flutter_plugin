@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - gt3_flutter_plugin (0.0.1):
+  - gt3_flutter_plugin (0.0.2):
     - Flutter
     - GT3Captcha-iOS
   - GT3Captcha-iOS (0.14.9)
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  gt3_flutter_plugin: 8f26ff631bd453a97b7bdb5aca90ecc89ad40ca7
+  gt3_flutter_plugin: 162bb98f608d6f37d5c163914e672ee55ce2b837
   GT3Captcha-iOS: b6d458bdbd936ece760b6c76e12f8a160570f523
 
 PODFILE CHECKSUM: e16eac9ab5ec81ebccaeb5d09cef1eaf8268d7ab

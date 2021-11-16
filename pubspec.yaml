@@ -1,7 +1,8 @@
 name: gt3_flutter_plugin
 description: The official flutter plugin project for geetest. Support Flutter 2.0.
 version: 0.0.2
-homepage: https://github.com/GeeTeam/gt3_flutter_plugin
+homepage: www.geetest.com
+repository: https://github.com/GeeTeam/gt3_flutter_plugin
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
