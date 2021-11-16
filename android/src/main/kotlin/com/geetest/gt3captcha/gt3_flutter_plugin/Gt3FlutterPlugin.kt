@@ -1,7 +1,6 @@
 package com.geetest.gt3captcha.gt3_flutter_plugin
 
 import android.app.Activity
-import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import com.geetest.sdk.GT3ConfigBean
@@ -33,7 +32,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "startCaptcha" -> {
-                startCaptchaInner(call, result)
+                startCaptchaInner(call)
             }
             "configurationChanged" -> {
                 configurationChanged()
@@ -74,7 +73,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         gt3GeetestUtils.changeDialogLayout()
     }
 
-    private fun startCaptchaInner(call: MethodCall, result: Result) {
+    private fun startCaptchaInner(call: MethodCall) {
         val args: Map<String, Any> = call.arguments()
         Log.i(TAG, "Geetest captcha register params: $args")
 
@@ -90,7 +89,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 JSONObject("{\"success\":$geetestSuccess,\"challenge\":\"$geetestChallenge\",\"gt\":\"$geetestId\",\"new_captcha\":true}")
             gt3GeetestUtils.getGeetest()
         } else {
-            val ret: Map<String, String> = mapOf(
+            val ret = hashMapOf<String, Any>(
                 "initWithDomain" to "com.geetest.gt3.flutter",
                 "code" to "-1",
                 "userInfo" to "Register params parse invalid"
@@ -106,7 +105,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             pattern = 1
             listener = object : GT3Listener() {
                 override fun onDialogReady(duration: String?) {
-                    channel.invokeMethod("onShow", mapOf("show" to "1"))
+                    channel.invokeMethod("onShow", hashMapOf<String, Any>("show" to "1"))
                 }
 
                 override fun onDialogResult(result: String?) {
@@ -114,20 +113,19 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
 
                 override fun onReceiveCaptchaCode(p0: Int) {
-                    Log.i(TAG, "Geetest captcha code: $p0")
-                    channel.invokeMethod("onResult", mapOf("code" to "$p0"))
+                    channel.invokeMethod("onResult", hashMapOf<String, Any>("code" to "$p0"))
                 }
 
                 override fun onStatistics(p0: String?) {}
 
                 override fun onClosed(p0: Int) {
-                    channel.invokeMethod("onClose", mapOf("close" to "$p0"))
+                    channel.invokeMethod("onClose", hashMapOf<String, Any>("close" to "$p0"))
                 }
 
                 override fun onSuccess(p0: String?) {}
 
                 override fun onFailed(p0: GT3ErrorBean?) {
-                    val ret = mapOf(
+                    val ret = hashMapOf<String, Any?>(
                         "code" to p0?.errorCode,
                         "description" to p0?.errorDesc
                     )

@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Fix null callbacks on Android
+
 ## 0.0.2
 
 * Android 支持
