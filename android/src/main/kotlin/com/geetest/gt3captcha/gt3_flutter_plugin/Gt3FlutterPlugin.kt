@@ -43,7 +43,10 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 configurationChanged()
             }
             "getPlatformVersion" -> {
-                result.success("Android ${Build.VERSION.RELEASE}")
+                result.success(GT3GeetestUtils.getVersion())
+            }
+            "close" -> {
+                gt3GeetestUtils.dismissGeetestDialog()
             }
             else -> {
                 result.notImplemented()
