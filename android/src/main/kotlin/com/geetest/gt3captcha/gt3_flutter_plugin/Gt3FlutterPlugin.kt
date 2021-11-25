@@ -131,9 +131,8 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             gt3GeetestUtils.getGeetest()
         } else {
             val ret = hashMapOf(
-                "initWithDomain" to "com.geetest.gt3.flutter",
                 "code" to "-1",
-                "userInfo" to "Register params parse invalid"
+                "description" to "Register params parse invalid"
             )
             channel.invokeMethod("onError", ret)
         }
