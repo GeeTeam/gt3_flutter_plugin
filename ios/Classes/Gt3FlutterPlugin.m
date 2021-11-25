@@ -51,6 +51,7 @@
         _manager.delegate = self;
         _manager.viewDelegate = self;
         
+        if (timeout) [_manager useGTViewWithTimeout:timeout.doubleValue];
         if (language) [_manager useLanguageCode:language];
         _manager.maskColor = [self colorFromHexString:bgColorHex] ?: [UIColor colorWithRed:0 green:0 blue:0 alpha:0.4];
         if (cornerRadius) [_manager useGTViewWithCornerRadius:cornerRadius.doubleValue];
