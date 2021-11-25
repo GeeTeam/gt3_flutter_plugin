@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'gt3_flutter_plugin'
-  s.version          = '0.0.3'
+  s.version          = '0.0.4'
   s.summary          = 'The flutter plugin project for Geetest captcha.'
   s.description      = <<-DESC
   The flutter plugin project for Geetest captcha.
