@@ -83,24 +83,20 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         args?.run {
             if (containsKey("timeout")) {
                 val value = this["timeout"] as? Double ?: 8.0
-                Log.d(TAG, "set timeout: $value")
                 gt3ConfigBean.timeout = value.toInt() * 1000
             }
             if (containsKey("language")) {
                 val value = this["language"] as? String ?: "zh"
-                Log.d(TAG, "set language: $value")
                 gt3ConfigBean.lang = value
             }
             if (containsKey("cornerRadius")) {
                 val value = this["cornerRadius"] as? Double ?: 2.0
                 val valueInt = value.toInt()
-                Log.d(TAG, "set cornerRadius: $valueInt")
                 gt3ConfigBean.corners = valueInt.absoluteValue
                 gt3ConfigBean.dialogOffsetY = valueInt
             }
             if (containsKey("serviceNode")) {
                 val value = this["serviceNode"] as? Int ?: 0
-                Log.d(TAG, "set serviceNode: $value")
                 if (value == 0) {
                     gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_CHINA
                 } else if (value == 1) {
@@ -109,7 +105,6 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
             if (containsKey("bgInteraction")) {
                 val value = this["bgInteraction"] as? Boolean ?: true
-                Log.d(TAG, "set bgInteraction: $value")
                 gt3ConfigBean.isCanceledOnTouchOutside = value
             }
         }
