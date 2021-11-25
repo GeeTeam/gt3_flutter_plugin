@@ -7,6 +7,7 @@ import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
 import com.geetest.sdk.GT3Listener
+import com.geetest.sdk.utils.GT3ServiceNode
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -15,6 +16,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import org.json.JSONObject
+import kotlin.math.absoluteValue
 
 class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
@@ -31,6 +33,9 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
+            "initWithConfig" -> {
+                initWithConfigInner(call)
+            }
             "startCaptcha" -> {
                 startCaptchaInner(call)
             }
@@ -61,8 +66,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        gt3GeetestUtils.destory()
-        this.activity = null
+        onDetachedFromActivity()
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -71,6 +75,45 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private fun configurationChanged() {
         gt3GeetestUtils.changeDialogLayout()
+    }
+
+    private fun initWithConfigInner(call: MethodCall) {
+        val args: Map<String, Any>? = call.arguments()
+        Log.i(TAG, "Geetest initWithConfig configs: $args")
+        args?.run {
+            if (containsKey("timeout")) {
+                val value = this["timeout"] as? Double ?: 8.0
+                Log.d(TAG, "set timeout: $value")
+                gt3ConfigBean.timeout = value.toInt() * 1000
+            }
+            if (containsKey("language")) {
+                val value = this["language"] as? String ?: "zh"
+                Log.d(TAG, "set language: $value")
+                gt3ConfigBean.lang = value
+            }
+            if (containsKey("cornerRadius")) {
+                val value = this["cornerRadius"] as? Double ?: 2.0
+                val valueInt = value.toInt()
+                Log.d(TAG, "set cornerRadius: $valueInt")
+                gt3ConfigBean.corners = valueInt.absoluteValue
+                gt3ConfigBean.dialogOffsetY = valueInt
+            }
+            if (containsKey("serviceNode")) {
+                val value = this["serviceNode"] as? Int ?: 0
+                Log.d(TAG, "set serviceNode: $value")
+                if (value == 0) {
+                    gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_CHINA
+                } else if (value == 1) {
+                    gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_IPV6
+                }
+            }
+            if (containsKey("bgInteraction")) {
+                val value = this["bgInteraction"] as? Boolean ?: true
+                Log.d(TAG, "set bgInteraction: $value")
+                gt3ConfigBean.isCanceledOnTouchOutside = value
+            }
+        }
+        gt3GeetestUtils.init(gt3ConfigBean)
     }
 
     private fun startCaptchaInner(call: MethodCall) {
@@ -89,7 +132,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 JSONObject("{\"success\":$geetestSuccess,\"challenge\":\"$geetestChallenge\",\"gt\":\"$geetestId\",\"new_captcha\":true}")
             gt3GeetestUtils.getGeetest()
         } else {
-            val ret = hashMapOf<String, Any>(
+            val ret = hashMapOf(
                 "initWithDomain" to "com.geetest.gt3.flutter",
                 "code" to "-1",
                 "userInfo" to "Register params parse invalid"
@@ -105,7 +148,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             pattern = 1
             listener = object : GT3Listener() {
                 override fun onDialogReady(duration: String?) {
-                    channel.invokeMethod("onShow", hashMapOf<String, Any>("show" to "1"))
+                    channel.invokeMethod("onShow", hashMapOf("show" to "1"))
                 }
 
                 override fun onDialogResult(result: String?) {
@@ -113,19 +156,19 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
 
                 override fun onReceiveCaptchaCode(p0: Int) {
-                    channel.invokeMethod("onResult", hashMapOf<String, Any>("code" to "$p0"))
+                    channel.invokeMethod("onResult", hashMapOf("code" to "$p0"))
                 }
 
                 override fun onStatistics(p0: String?) {}
 
                 override fun onClosed(p0: Int) {
-                    channel.invokeMethod("onClose", hashMapOf<String, Any>("close" to "$p0"))
+                    channel.invokeMethod("onClose", hashMapOf("close" to "$p0"))
                 }
 
                 override fun onSuccess(p0: String?) {}
 
                 override fun onFailed(p0: GT3ErrorBean?) {
-                    val ret = hashMapOf<String, Any?>(
+                    val ret = hashMapOf(
                         "code" to p0?.errorCode,
                         "description" to p0?.errorDesc
                     )
@@ -135,7 +178,6 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 override fun onButtonClick() {}
             }
         }
-        gt3GeetestUtils.init(gt3ConfigBean)
     }
 
     private companion object {
