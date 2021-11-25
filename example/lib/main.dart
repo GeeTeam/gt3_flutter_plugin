@@ -85,7 +85,9 @@ class _MyAppState extends State<MyApp> {
         // 处理验证中返回的错误
         if (Platform.isAndroid) {
           // Android 平台
-          if (code == "-1") {
+          if (code == "-2") {
+            // Dart 调用异常
+          } else if (code == "-1") {
             // Gt3RegisterData 参数不合法
           } else if (code == "201") {
             // 网络无法访问
@@ -128,6 +130,8 @@ class _MyAppState extends State<MyApp> {
             // 尝试过多, 重新引导用户触发验证即可
           } else if (code == "-10") {
             // 预判断时被封禁, 不会再进行图形验证
+          } else if (code == "-2") {
+            // Dart 调用异常
           } else if (code == "-1") {
             // Gt3RegisterData 参数不合法
           } else {

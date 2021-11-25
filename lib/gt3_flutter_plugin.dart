@@ -33,7 +33,9 @@ class Gt3FlutterPlugin {
     try {
       _channel.invokeMethod('initWithConfig', config.toMap());
     } catch (e) {
-      print(flutterLog + e.toString());
+      String desc = flutterLog + e.toString();
+      Map<String, String> error = {"code": "-2", "description": desc};
+      _onError!(error);
     }
   }
 
@@ -43,7 +45,9 @@ class Gt3FlutterPlugin {
     try {
       _channel.invokeMethod('startCaptcha', argument);
     } catch (e) {
-      print(flutterLog + e.toString());
+      String desc = flutterLog + e.toString();
+      Map<String, String> error = {"code": "-2", "description": desc};
+      _onError!(error);
     }
   }
 
@@ -52,7 +56,9 @@ class Gt3FlutterPlugin {
       try {
         _channel.invokeMethod('configurationChanged');
       } catch (e) {
-        print(flutterLog + e.toString());
+        String desc = flutterLog + e.toString();
+        Map<String, String> error = {"code": "-2", "description": desc};
+        _onError!(error);
       }
     }
   }
@@ -62,7 +68,9 @@ class Gt3FlutterPlugin {
     try {
       _channel.invokeMethod('close');
     } catch (e) {
-      print(flutterLog + e.toString());
+      String desc = flutterLog + e.toString();
+      Map<String, String> error = {"code": "-2", "description": desc};
+      _onError!(error);
     }
   }
 
