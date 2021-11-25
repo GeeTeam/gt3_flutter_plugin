@@ -24,6 +24,18 @@ class Gt3FlutterPlugin {
   EventHandler? _onResult;
   EventHandler? _onError;
 
+  Gt3FlutterPlugin([Gt3CaptchaConfig? config]) {
+    if (config == null) {
+      config = Gt3CaptchaConfig();
+    }
+
+    try {
+      _channel.invokeMethod('initWithConfig', config.toMap());
+    } catch (e) {
+      print(flutterLog + e.toString());
+    }
+  }
+
   /// 使用注册参数开启验证
   void startCaptcha(Gt3RegisterData arg) {
     Map<String, dynamic> argument = arg.toMap();
@@ -131,7 +143,44 @@ class Gt3RegisterData {
     return <String, dynamic>{
       'gt': gt,
       'challenge': challenge,
-      'success': success
+      'success': success,
+    }..removeWhere((key, value) => value == null);
+  }
+}
+
+class Gt3CaptchaConfig {
+  /// 验证超时时长
+  /// 默认 8 秒
+  double timeout = 8.0;
+
+  /// 验证语言
+  /// 默认跟随系统
+  /// 不支持的语言为英文
+  String? language;
+
+  /// 验证背景颜色
+  /// 16进制字符串(例如："0xFFFFFFFF")
+  String? bgColor;
+
+  /// 验证窗口圆角
+  /// 单位 px
+  double? cornerRadius;
+
+  /// 服务集群节点
+  /// 0 中国节点，1 中国 IPv6节点
+  /// 默认为 0
+  int serviceNode = 0;
+
+  bool bgInteraction = true;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'timeout': timeout,
+      'language': language,
+      'bgColor': bgColor,
+      'cornerRadius': cornerRadius,
+      'serviceNode': serviceNode,
+      'bgInteraction': bgInteraction
     }..removeWhere((key, value) => value == null);
   }
 }

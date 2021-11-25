@@ -23,8 +23,8 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
 
   /// 监控页面配置变化
-  static const MethodChannel _demoChannel = MethodChannel('gt4_flutter_demo');
-  final Gt3FlutterPlugin captcha = Gt3FlutterPlugin();
+  static const MethodChannel _demoChannel = MethodChannel('gt3_flutter_demo');
+  Gt3FlutterPlugin? captcha;
 
   @override
   void initState() {
@@ -47,7 +47,14 @@ class _MyAppState extends State<MyApp> {
     try {
       _demoChannel.setMethodCallHandler(_configurationChanged);
 
-      captcha.addEventHandler(onShow: (Map<String, dynamic> message) async {
+      Gt3CaptchaConfig config = Gt3CaptchaConfig();
+      config.language = 'en';
+      config.cornerRadius = 10.0;
+      config.timeout = 5.0;
+      config.bgColor = '0x000000FF';
+      captcha = Gt3FlutterPlugin(config);
+
+      captcha?.addEventHandler(onShow: (Map<String, dynamic> message) async {
         // TO-DO
         // 验证视图已展示
         debugPrint("Captcha did show");
@@ -160,7 +167,7 @@ class _MyAppState extends State<MyApp> {
             gt: jsonResponse["gt"],
             challenge: jsonResponse["challenge"],
             success: jsonResponse["success"] == 1);
-        captcha.startCaptcha(registerData);
+        captcha?.startCaptcha(registerData);
       } else {
         debugPrint(
             api1 + " response status: " + response.statusCode.toString());
@@ -173,13 +180,12 @@ class _MyAppState extends State<MyApp> {
 
   Future<dynamic> _configurationChanged(MethodCall methodCall) async {
     debugPrint("Activity configurationChanged");
-    return captcha
-        .configurationChanged(methodCall.arguments.cast<String, dynamic>());
+    return captcha?.configurationChanged(methodCall.arguments.cast<String, dynamic>());
   }
 
   // 关闭
   void close() {
-    captcha.close();
+    captcha?.close();
   }
 
   Future<dynamic> validateCaptchaResult(Map<String, String> result) async {
