@@ -24,6 +24,7 @@ class Gt3FlutterPlugin {
   EventHandler? _onResult;
   EventHandler? _onError;
 
+  /// 初始化 plugin
   Gt3FlutterPlugin([Gt3CaptchaConfig? config]) {
     if (config == null) {
       config = Gt3CaptchaConfig();
@@ -153,17 +154,26 @@ class Gt3CaptchaConfig {
   /// 默认 8 秒
   double timeout = 8.0;
 
-  /// 验证语言
+  /// 指定验证语言
   /// 默认跟随系统
+  /// "ar"(阿拉伯语/Arabic), "de"(德语/German), "en"(英语/English),
+  /// "es"(西班牙语/Spanish), "fr"(法语/French), "id"(印尼语/Indonesian),
+  /// "ja"(日语/Japanese), "ko"(韩语/Korean), "pt-PT"(葡萄牙语/Portuguese),
+  /// "ru"(俄语/Russian), "zh-CN"(简体中文/Chinese Simplified),
+  /// "zh-HK"(香港繁体/Chinese Hong Kong), "zh-TW"(台湾繁体/Chinese Taiwan),
+  /// "ta"(泰语/Thai), "tr"(土耳其语/Turkish), "vi"(越南语/Vietnamese),
+  /// "ta"(泰米尔语/Tamil), "it"(意大利语/Italian), "bn"(孟加拉语/Bengali),
+  /// "mr"(马拉地语/Marathi)
   /// 不支持的语言为英文
   String? language;
 
   /// 验证背景颜色
+  /// 默认灰色半透明
   /// 16进制字符串(例如："0xFFFFFFFF")
   String? bgColor;
 
   /// 验证窗口圆角
-  /// 单位 px
+  /// 默认 2px
   double? cornerRadius;
 
   /// 服务集群节点
@@ -171,6 +181,8 @@ class Gt3CaptchaConfig {
   /// 默认为 0
   int serviceNode = 0;
 
+  /// 点击背景关闭
+  /// 默认允许
   bool bgInteraction = true;
 
   Map<String, dynamic> toMap() {
