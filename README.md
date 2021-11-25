@@ -27,7 +27,7 @@ dependencies:
 
 ```
 dependencies:
-  gt3_flutter_plugin: 0.0.3
+  gt3_flutter_plugin: 0.0.4
 ```
 
 ## 配置 / Configuration
@@ -40,27 +40,46 @@ dependencies:
 
 ### Init
 
+初始化
+
 ```dart
 Gt3FlutterPlugin captcha = Gt3FlutterPlugin();
 ```
 
-### startCaptcha
+或
 
 ```dart
+Gt3CaptchaConfig config = Gt3CaptchaConfig();
+config.language = 'en'; // 设置语言为英文
+config.cornerRadius = 5.0; // 设置圆角大小为 5.0
+config.timeout = 5.0; // 设置每个请求的超时时间为 5.0
+Gt3FlutterPlugin captcha = Gt3FlutterPlugin(config);
+```
+
+### startCaptcha
+
+启动验证
+
+```dart
+// 从服务端接口获取验证参数
 Gt3RegisterData registerData = Gt3RegisterData(
-    gt: ..., // 
-    challenge: ..., // 从极验获取
-    success: ...); // 
+    gt: ..., // 验证ID，从极验后台创建
+    challenge: ..., // 从极验服务动态获取
+    success: ...); // 对极验服务的心跳检测
 captcha.startCaptcha(registerData);
 ```
 
 ### close
+
+关闭验证
 
 ```dart
 captcha.close();
 ```
 
 ### addEventHandler
+
+添加处理回调
 
 ```dart
 captcha.addEventHandler(
@@ -94,32 +113,34 @@ captcha.addEventHandler(
 
         // 处理验证中返回的错误
         if (Platform.isAndroid) { // Android 平台
-            if (code == "-1") {
-            // Gt3RegisterData 参数不合法
-            }
+            if (code == "-2") {
+              // Dart 调用异常
+            } else if (code == "-1") {
+              // Gt3RegisterData 参数不合法
+            } 
             else if (code == "201") {
-            // 网络无法访问
+              // 网络无法访问
             }
             else if (code == "202") {
-            // Json 解析错误
+              // Json 解析错误
             }
             else if (code == "204") {
-            // WebView 加载超时，请检查是否混淆极验 SDK
+              // WebView 加载超时，请检查是否混淆极验 SDK
             }
             else if (code == "204_1") {
-            // WebView 加载前端页面错误，请查看日志
+              // WebView 加载前端页面错误，请查看日志
             }
             else if (code == "204_2") {
-            // WebView 加载 SSLError
+              // WebView 加载 SSLError
             }
             else if (code == "206") {
-            // gettype 接口错误或返回为 null
+              // gettype 接口错误或返回为 null
             }
             else if (code == "207") {
-            // getphp 接口错误或返回为 null
+              // getphp 接口错误或返回为 null
             }
             else if (code == "208") {
-            // ajax 接口错误或返回为 null
+              // ajax 接口错误或返回为 null
             }
             else {
             // 更多错误码参考开发文档
@@ -129,36 +150,38 @@ captcha.addEventHandler(
 
         if (Platform.isIOS) { // iOS 平台
             if (code == "-1009") {
-                // 网络无法访问
+              // 网络无法访问
             }
             else if (code == "-1004") {
-                // 无法查找到 HOST 
+              // 无法查找到 HOST 
             }
             else if (code == "-1002") {
-                // 非法的 URL
+              // 非法的 URL
             }
             else if (code == "-1001") {
-                // 网络超时
+              // 网络超时
             }
             else if (code == "-999") {
-                // 请求被意外中断, 一般由用户进行取消操作导致
+              // 请求被意外中断, 一般由用户进行取消操作导致
             }
             else if (code == "-21") {
-                // 使用了重复的 challenge
-                // 检查获取 challenge 是否进行了缓存
+              // 使用了重复的 challenge
+              // 检查获取 challenge 是否进行了缓存
             }
             else if (code == "-20") {
-                // 尝试过多, 重新引导用户触发验证即可
+              // 尝试过多, 重新引导用户触发验证即可
             }
             else if (code == "-10") {
-                // 预判断时被封禁, 不会再进行图形验证
+              // 预判断时被封禁, 不会再进行图形验证
             }
-            else if (code == "-1") {
-                // Gt3RegisterData 参数不合法
+            else if (code == "-2") {
+              // Dart 调用异常
+            } else if (code == "-1") {
+              // Gt3RegisterData 参数不合法
             }
             else {
-                // 更多错误码参考开发文档
-                // https://docs.geetest.com/sensebot/apirefer/errorcode/ios
+              // 更多错误码参考开发文档
+              // https://docs.geetest.com/sensebot/apirefer/errorcode/ios
             }
         }
 });

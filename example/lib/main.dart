@@ -48,10 +48,9 @@ class _MyAppState extends State<MyApp> {
       _demoChannel.setMethodCallHandler(_configurationChanged);
 
       Gt3CaptchaConfig config = Gt3CaptchaConfig();
-      config.language = 'en';
-      config.cornerRadius = 10.0;
-      config.timeout = 5.0;
-      config.bgColor = '0x000000FF';
+      // config.language = 'en'; // 设置语言为英文
+      // config.cornerRadius = 5.0; // 设置圆角大小为 5.0
+      // config.timeout = 5.0; // 设置每个请求的超时时间为 5.0
       captcha = Gt3FlutterPlugin(config);
 
       captcha?.addEventHandler(onShow: (Map<String, dynamic> message) async {
@@ -86,7 +85,9 @@ class _MyAppState extends State<MyApp> {
         // 处理验证中返回的错误
         if (Platform.isAndroid) {
           // Android 平台
-          if (code == "-1") {
+          if (code == "-2") {
+            // Dart 调用异常
+          } else if (code == "-1") {
             // Gt3RegisterData 参数不合法
           } else if (code == "201") {
             // 网络无法访问
@@ -129,6 +130,8 @@ class _MyAppState extends State<MyApp> {
             // 尝试过多, 重新引导用户触发验证即可
           } else if (code == "-10") {
             // 预判断时被封禁, 不会再进行图形验证
+          } else if (code == "-2") {
+            // Dart 调用异常
           } else if (code == "-1") {
             // Gt3RegisterData 参数不合法
           } else {
