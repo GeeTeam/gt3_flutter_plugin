@@ -51,7 +51,6 @@ class _MyAppState extends State<MyApp> {
       // config.language = 'en'; // 设置语言为英文
       // config.cornerRadius = 5.0; // 设置圆角大小为 5.0
       // config.timeout = 5.0; // 设置每个请求的超时时间为 5.0
-      // config.bgColor = '0x00000055'; // 设置背景颜色为灰色透明
       captcha = Gt3FlutterPlugin(config);
 
       captcha?.addEventHandler(onShow: (Map<String, dynamic> message) async {

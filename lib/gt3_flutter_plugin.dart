@@ -24,7 +24,7 @@ class Gt3FlutterPlugin {
   EventHandler? _onResult;
   EventHandler? _onError;
 
-  /// 初始化 plugin
+  /// 初始化验证 plugin
   Gt3FlutterPlugin([Gt3CaptchaConfig? config]) {
     if (config == null) {
       config = Gt3CaptchaConfig();
@@ -167,11 +167,6 @@ class Gt3CaptchaConfig {
   /// 不支持的语言为英文
   String? language;
 
-  /// 验证背景颜色
-  /// 默认灰色半透明
-  /// 16进制字符串(例如："0xFFFFFFFF")
-  String? bgColor;
-
   /// 验证窗口圆角
   /// 默认 2px
   double? cornerRadius;
@@ -189,7 +184,6 @@ class Gt3CaptchaConfig {
     return <String, dynamic>{
       'timeout': timeout,
       'language': language,
-      'bgColor': bgColor,
       'cornerRadius': cornerRadius,
       'serviceNode': serviceNode,
       'bgInteraction': bgInteraction
