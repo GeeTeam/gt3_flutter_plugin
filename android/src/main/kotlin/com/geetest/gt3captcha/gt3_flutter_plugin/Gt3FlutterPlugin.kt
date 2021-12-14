@@ -1,7 +1,6 @@
 package com.geetest.gt3captcha.gt3_flutter_plugin
 
 import android.app.Activity
-import android.os.Build
 import android.util.Log
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
@@ -141,6 +140,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun geetestInit() {
         gt3GeetestUtils = GT3GeetestUtils(activity)
         gt3ConfigBean = GT3ConfigBean()
+        var code = -1
         gt3ConfigBean.apply {
             pattern = 1
             listener = object : GT3Listener() {
@@ -149,20 +149,20 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
 
                 override fun onDialogResult(result: String?) {
+                    channel.invokeMethod("onResult", hashMapOf(
+                        "code" to "$code",
+                        "result" to "$result"
+                    ))
                     gt3GeetestUtils.showSuccessDialog()
                 }
 
                 override fun onReceiveCaptchaCode(p0: Int) {
-                    channel.invokeMethod("onResult", hashMapOf("code" to "$p0"))
+                    code = p0
                 }
-
-                override fun onStatistics(p0: String?) {}
 
                 override fun onClosed(p0: Int) {
                     channel.invokeMethod("onClose", hashMapOf("close" to "$p0"))
                 }
-
-                override fun onSuccess(p0: String?) {}
 
                 override fun onFailed(p0: GT3ErrorBean?) {
                     val ret = hashMapOf(
@@ -172,6 +172,8 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     channel.invokeMethod("onError", ret)
                 }
 
+                override fun onStatistics(p0: String?) {}
+                override fun onSuccess(p0: String?) {}
                 override fun onButtonClick() {}
             }
         }
