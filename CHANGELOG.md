@@ -1,3 +1,8 @@
+## 0.0.5
+2021-12-14
+
+* onResult callback now contains result fields for secondary validation on Android
+
 ## 0.0.4
 2021-11-25
 

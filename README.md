@@ -27,7 +27,7 @@ dependencies:
 
 ```
 dependencies:
-  gt3_flutter_plugin: 0.0.4
+  gt3_flutter_plugin: 0.0.5
 ```
 
 ## 配置 / Configuration
