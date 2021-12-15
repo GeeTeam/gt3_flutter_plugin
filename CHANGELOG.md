@@ -1,3 +1,9 @@
+## 0.0.6
+2021-12-15
+
+* Fix an inconsistency between platforms where onFailed callback contains different data type
+* Fix iOS pod integration issue
+
 ## 0.0.5
 2021-12-14
 
