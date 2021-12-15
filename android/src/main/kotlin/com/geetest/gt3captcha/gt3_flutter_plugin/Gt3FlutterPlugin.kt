@@ -166,8 +166,8 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
                 override fun onFailed(p0: GT3ErrorBean?) {
                     val ret = hashMapOf(
-                        "code" to p0?.errorCode,
-                        "description" to p0?.errorDesc
+                        "code" to "${p0?.errorCode}",
+                        "description" to "${p0?.errorDesc}"
                     )
                     channel.invokeMethod("onError", ret)
                 }
