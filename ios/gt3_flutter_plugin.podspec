@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.author           = { 'Geetest' => 'xuwei@geetest.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
+  s.static_framework = true
   s.dependency 'Flutter'
   s.dependency 'GT3Captcha-iOS'
   s.platform = :ios, '9.0'
