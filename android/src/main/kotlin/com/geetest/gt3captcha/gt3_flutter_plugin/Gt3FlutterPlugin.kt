@@ -149,9 +149,21 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
 
                 override fun onDialogResult(result: String?) {
+                    // 将 result 转为 map
+                    val map = hashMapOf<String, String>()
+                    try {
+                        val jsonObject = JSONObject(result)
+                        val keys = jsonObject.keys()
+                        while (keys.hasNext()){
+                            val key = keys.next()
+                            map[key] = jsonObject.optString(key)
+                        }
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                    }
                     channel.invokeMethod("onResult", hashMapOf(
                         "code" to "$code",
-                        "result" to "$result"
+                        "result" to map
                     ))
                     gt3GeetestUtils.showSuccessDialog()
                 }
