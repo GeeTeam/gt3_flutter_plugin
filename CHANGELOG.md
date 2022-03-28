@@ -1,3 +1,8 @@
+## 0.0.7
+2022-03-28
+
+* Fix an inconsistency between platforms where onDialogResult callback contains different data type
+
 ## 0.0.6
 2021-12-15
 
