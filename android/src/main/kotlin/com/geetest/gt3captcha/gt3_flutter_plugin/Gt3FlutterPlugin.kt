@@ -114,20 +114,28 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun startCaptchaInner(call: MethodCall) {
-        val args: Map<String, Any> = call.arguments()
+        val args: Map<String, Any>? = call.arguments()
         Log.i(TAG, "Geetest captcha register params: $args")
 
-        if (args.containsKey("gt") &&
-            args.containsKey("challenge") &&
-            args.containsKey("success")
-        ) {
-            gt3GeetestUtils.startCustomFlow()
-            val geetestId = args["gt"]
-            val geetestChallenge = args["challenge"]
-            val geetestSuccess = if (args["success"] == null) 0 else 1
-            gt3ConfigBean.api1Json =
-                JSONObject("{\"success\":$geetestSuccess,\"challenge\":\"$geetestChallenge\",\"gt\":\"$geetestId\",\"new_captcha\":true}")
-            gt3GeetestUtils.getGeetest()
+        if (args != null) {
+            if (args.containsKey("gt") &&
+                args.containsKey("challenge") &&
+                args.containsKey("success")
+            ) {
+                gt3GeetestUtils.startCustomFlow()
+                val geetestId = args["gt"]
+                val geetestChallenge = args["challenge"]
+                val geetestSuccess = if (args["success"] == null) 0 else 1
+                gt3ConfigBean.api1Json =
+                    JSONObject("{\"success\":$geetestSuccess,\"challenge\":\"$geetestChallenge\",\"gt\":\"$geetestId\",\"new_captcha\":true}")
+                gt3GeetestUtils.getGeetest()
+            } else {
+                val ret = hashMapOf(
+                    "code" to "-1",
+                    "description" to "Register params parse invalid"
+                )
+                channel.invokeMethod("onError", ret)
+            }
         } else {
             val ret = hashMapOf(
                 "code" to "-1",
@@ -154,17 +162,19 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     try {
                         val jsonObject = JSONObject(result)
                         val keys = jsonObject.keys()
-                        while (keys.hasNext()){
+                        while (keys.hasNext()) {
                             val key = keys.next()
                             map[key] = jsonObject.optString(key)
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                    channel.invokeMethod("onResult", hashMapOf(
-                        "code" to "$code",
-                        "result" to map
-                    ))
+                    channel.invokeMethod(
+                        "onResult", hashMapOf(
+                            "code" to "$code",
+                            "result" to map
+                        )
+                    )
                     gt3GeetestUtils.showSuccessDialog()
                 }
 
