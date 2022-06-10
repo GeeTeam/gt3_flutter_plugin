@@ -11,7 +11,7 @@ class Gt3FlutterPlugin {
   static const MethodChannel _channel = MethodChannel('gt3_flutter_plugin');
 
   static String get version {
-    return "0.0.7";
+    return "0.0.8";
   }
 
   static Future<String?> get platformVersion async {
