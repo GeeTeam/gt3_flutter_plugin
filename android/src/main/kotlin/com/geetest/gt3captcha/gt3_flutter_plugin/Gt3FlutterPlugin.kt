@@ -114,8 +114,17 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun startCaptchaInner(call: MethodCall) {
-        val args: Map<String, Any> = call.arguments()
+        val args: Map<String, Any>? = call.arguments()
         Log.i(TAG, "Geetest captcha register params: $args")
+
+        if (args == null) {
+            val ret = hashMapOf(
+                "code" to "-1",
+                "description" to "Register params parse invalid"
+            )
+            channel.invokeMethod("onError", ret)
+            return
+        }
 
         if (args.containsKey("gt") &&
             args.containsKey("challenge") &&
@@ -154,17 +163,19 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     try {
                         val jsonObject = JSONObject(result)
                         val keys = jsonObject.keys()
-                        while (keys.hasNext()){
+                        while (keys.hasNext()) {
                             val key = keys.next()
                             map[key] = jsonObject.optString(key)
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                    channel.invokeMethod("onResult", hashMapOf(
-                        "code" to "$code",
-                        "result" to map
-                    ))
+                    channel.invokeMethod(
+                        "onResult", hashMapOf(
+                            "code" to "$code",
+                            "result" to map
+                        )
+                    )
                     gt3GeetestUtils.showSuccessDialog()
                 }
 
