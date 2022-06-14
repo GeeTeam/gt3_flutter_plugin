@@ -1,7 +1,7 @@
 ## 0.0.8
-2022-06-10
+2022-06-14
 
-* Support Flutter 3.0, update README
+* Adapt Flutter 3.0, update README
 
 ## 0.0.7
 2022-03-28
