@@ -1,3 +1,8 @@
+## 0.0.9
+2024-01-26
+
+* update native sdk to 4.4.2.1;adapt flutter 3.0
+
 ## 0.0.8
 2022-06-14
 
