@@ -6,6 +6,7 @@ import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
 import com.geetest.sdk.GT3Listener
+import com.geetest.sdk.utils.GT3Protocol
 import com.geetest.sdk.utils.GT3ServiceNode
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -110,6 +111,7 @@ class Gt3FlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 gt3ConfigBean.isCanceledOnTouchOutside = value
             }
         }
+        gt3ConfigBean.getRequestProtocol = GT3Protocol.HTTPS
         gt3GeetestUtils.init(gt3ConfigBean)
     }
 
