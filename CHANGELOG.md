@@ -1,3 +1,10 @@
+## 0.1.1
+2025-01-09
+
+* Fix exceptions caused by malformed URLs in release build
+* Update Android Sensebot SDK to 4.4.4, target SDK 34, update AGP to 7.2.2
+* Gradle 7.6.4, demo now use declarative gradle style flutter plugin loader, see [Deprecated imperative apply of Flutter's Gradle plugins](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply)
+
 ## 0.1.0
 2024-05-16
 
